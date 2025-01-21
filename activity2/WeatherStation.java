@@ -8,10 +8,10 @@
  * Date: January 16, 2025
  */
 
- public class WeatherStation implements Runnable {
+public class WeatherStation implements Runnable {
     private final KelvinTempSensor sensor; // Temperature sensor.
-    private final long PERIOD = 1000;     // 1 sec = 1000 ms.
-    private TemperatureDisplay display;    // Interface for displaying temperature.
+    private final long PERIOD = 1000; // 1 sec = 1000 ms.
+    private TemperatureDisplay display; // Interface for displaying temperature.
 
     /*
      * When a WeatherStation object is created, it in turn creates the sensor
@@ -19,7 +19,7 @@
      */
     public WeatherStation(TemperatureDisplay display) {
         sensor = new KelvinTempSensor();
-        this.display = display;  // Set the display interface.
+        this.display = display; // Set the display interface.
     }
 
     /*
@@ -28,11 +28,11 @@
      * its sensor, and reports this as a formatted output string.
      */
     public void run() {
-        int reading;            // Actual sensor reading.
-        double celsius;         // Sensor reading transformed to Celsius.
-        double kelvin;          // Sensor reading in Kelvin.
+        int reading; // Actual sensor reading.
+        double celsius; // Sensor reading transformed to Celsius.
+        double kelvin; // Sensor reading in Kelvin.
 
-        final int KTOC = -27315;   // Convert raw Kelvin reading to Celsius.
+        final int KTOC = -27315; // Convert raw Kelvin reading to Celsius.
 
         while (true) {
             try {
@@ -52,37 +52,34 @@
 
     /*
      * Initial main method.
-     *      Create the WeatherStation (Runnable).
-     *      Embed the WeatherStation in a Thread.
-     *      Start the Thread.
+     * Create the WeatherStation (Runnable).
+     * Embed the WeatherStation in a Thread.
+     * Start the Thread.
      */
     public static void main(String[] args) {
-        // Ask user to select the UI type
+
         System.out.println("Choose UI option: 1) AWT 2) Swing 3) Command Line");
         java.util.Scanner scanner = new java.util.Scanner(System.in);
         int choice = scanner.nextInt();
 
-        // Create the WeatherStation based on user choice
         TemperatureDisplay display = null;
         switch (choice) {
             case 1:
-                display = new AWTUI();  // AWT UI
+                display = new AWTUI();
                 break;
             case 2:
-                display = new SwingUI();  // Swing UI
+                display = new SwingUI();
                 break;
             case 3:
-                display = new TextUI();  // Text UI
+                display = new TextUI();
                 break;
             default:
                 System.out.println("Invalid choice! Exiting.");
                 System.exit(1);
         }
 
-        // Create WeatherStation with selected display and start it
         WeatherStation ws = new WeatherStation(display);
         Thread thread = new Thread(ws);
         thread.start();
     }
 }
-
