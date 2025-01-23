@@ -1,0 +1,18 @@
+# Build Instructions for WeatherStation Program
+
+## Compiling the Program
+1. Place all the source files AWTUI.java, KelvinTempSensor.java, SwingUI.java, TextUI.java, TemperatureDisplay.java, and WeatherStation.java in the same directory.
+
+3. Open a terminal to the directory containing the source files.
+
+
+## Running the Program
+After compilation, you can run the program in three different modes: text-based UI, AWT-based UI, or Swing-based UI. 
+
+1. **AWT-based UI**
+- When prompted, enter `1` to select the AWT-based UI.
+
+2. **Swing-based UI**
+- When prompted, enter `2` to select the Swing-based UI.
+
+
