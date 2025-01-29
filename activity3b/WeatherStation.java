@@ -2,25 +2,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherStation implements Runnable {
-    private final KelvinTempSensor sensor; // Temperature sensor.
+    private final KelvinTempSensor tempSensor; // Temperature sensor.
     private final long PERIOD = 1000; // 1 sec = 1000 ms.
-    private List<TemperatureDisplay> observers; // List to hold observers (displays).
+
+    private final Barometer barometer;
+    private List<TemperatureDisplay> observers;
 
     /*
      * When a WeatherStation object is created, it in turn creates the sensor
      * object it will use and initializes the observer list.
      */
     public WeatherStation() {
-        sensor = new KelvinTempSensor();
+        tempSensor = new KelvinTempSensor();
+        barometer = new Barometer();
         observers = new ArrayList<>();
     }
 
-    public synchronized void addObserver(TemperatureDisplay observer) {
-        observers.add(observer);
+    public synchronized void addObserver(TemperatureDisplay display) {
+        observers.add(display);
     }
 
     public synchronized void removeObserver(TemperatureDisplay observer) {
         observers.remove(observer);
+    }
+
+    public double getTemperatureFahrenheit() {
+        return (tempSensor.reading() / 100.0 - 273.15) * 9 / 5 + 32;
+    }
+
+    public double getPressureInInches() {
+        return barometer.pressure();
+    }
+
+    public double getPressureInMillibars() {
+        return barometer.pressure() * 33.864;
     }
 
     /*
@@ -32,6 +47,9 @@ public class WeatherStation implements Runnable {
         int reading; // Actual sensor reading.
         double celsius; // Sensor reading transformed to Celsius.
         double kelvin; // Sensor reading in Kelvin.
+        double fahrenheit;
+        double pressureInches;
+        double pressureMillibars;
 
         final int KTOC = -27315; // Convert raw Kelvin reading to Celsius.
 
@@ -42,18 +60,22 @@ public class WeatherStation implements Runnable {
                 System.err.println(e);
             }
 
-            reading = sensor.reading();
+            reading = tempSensor.reading();
             celsius = (reading + KTOC) / 100.0;
             kelvin = reading / 100.0;
+            fahrenheit = getTemperatureFahrenheit();
+            pressureInches = getPressureInInches();
+            pressureMillibars = getPressureInMillibars();
 
             // Notify all observers with the current temperature.
-            notifyObservers(celsius, kelvin);
+            notifyObservers(celsius, kelvin, fahrenheit, pressureInches, pressureMillibars);
         }
     }
 
-    private synchronized void notifyObservers(double celsius, double kelvin) {
+    private synchronized void notifyObservers(double celsius, double kelvin, double fahrenheit,
+            double pressureInches, double pressureMillibars) {
         for (TemperatureDisplay observer : observers) {
-            observer.updateTemperatures(celsius, kelvin);
+            observer.updateWeather(celsius, kelvin, fahrenheit, pressureInches, pressureMillibars);
         }
     }
 
